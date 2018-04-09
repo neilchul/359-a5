@@ -1,0 +1,112 @@
+.constant
+OBJREF	0x40
+.end-constant
+
+.main
+label:
+    LDC_W			OBJREF
+
+    BIPUSH      2
+    BIPUSH      -4
+    INVOKEVIRTUAL abs
+
+    IRETURN
+.end-main
+
+
+//*****implement abs **********
+.method mul(a,b)
+    .var
+        m   //return value
+        c   //min(a,b)
+        o   //max(a,b)
+        i   //loop index
+
+    .end-var
+
+    //m = 0
+    BIPUSH 0
+    ISTORE m
+
+    //abs(a)
+    ILOAD a
+    INVOKEVIRTUAL abs
+
+    ILOAD b
+    INVOKEVIRTUAL abs
+    
+    //stack    
+    //b
+    //a
+
+    ISUB
+
+    //stack
+    //a - b
+    IFLT    lesser
+
+    //b < a
+    ILOAD   b
+    INVOKEVIRTUAL abs
+    ISTORE  c
+    ILOAD   a
+    INVOKEVIRTUAL abs
+    ISTORE  o 
+
+    GOTO mulNext
+
+    //b > a
+    lesser:    
+    ILOAD   b
+    INVOKEVIRTUAL abs
+    ISTORE  o
+    ILOAD   a
+    INVOKEVIRTUAL abs
+    ISTORE  c
+
+
+    mulNext:
+
+    BIPUSH 0
+    ISTORE i
+    multiplyLoop:
+        ILOAD i
+        ILOAD c
+        IF_ICMPEQ multiplyDone
+
+        ILOAD   m
+        ILOAD   o
+        IADD
+        ISTORE  m 
+
+        
+    ILOAD   i
+    BIPUSH  1
+    IADD
+    ISTORE  i
+    GOTO multiplyLoop
+    multiplyDone:
+
+
+
+    mulReturn:
+
+    ILOAD   m
+    IRETURN
+
+.end-method
+
+
+.method abs(a)
+    .var 
+    .end-var
+
+    ILOAD   a
+    DUP
+    IFLT    negate
+    GOTO    endABS
+    negate:
+    INEG
+    endABS:
+    IRETURN
+.end-method
